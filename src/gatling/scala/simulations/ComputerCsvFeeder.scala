@@ -3,8 +3,9 @@ package simulations
 import io.gatling.core.Predef._
 import io.gatling.http.Predef._
 
-class Computer extends Simulation {
+class ComputerCsvFeeder  extends Simulation {
 
+  // this reads the csv file in src/gatling/resources/data
   val httpProtocol = http
     .baseURL("http://computer-database.gatling.io")
     .inferHtmlResources()
@@ -12,9 +13,9 @@ class Computer extends Simulation {
     .acceptEncodingHeader("gzip, deflate")
     .acceptLanguageHeader("en-US,en;q=0.5")
     .userAgentHeader("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:63.0) Gecko/20100101 Firefox/63.0")
-
   val headers_0 = Map("Upgrade-Insecure-Requests" -> "1")
 
+  val csvFeeder = csv("computerCsvFile.csv").circular
 
 
   val scn = scenario("computer")
@@ -32,16 +33,21 @@ class Computer extends Simulation {
         .get("/favicon.ico")
         .check(status.is(404))))
     .pause(26)
+    //data
+      .feed(csvFeeder)
     .exec(http("Enter details")
       .post("/computers")
       .headers(headers_0)
-      .formParam("name", "test777")
-      .formParam("introduced", "2018-05-9")
-      .formParam("discontinued", "218-06-09")
-      .formParam("company", "3")
+      .formParam("name", "${name}")
+      .formParam("introduced", "${introduced}")
+      .formParam("discontinued", "${discontinued}")
+      .formParam("company", "${company}")
       .resources(http("request_5")
         .get("/favicon.ico")
         .check(status.is(404))))
 
-  setUp(scn.inject(atOnceUsers(1))).protocols(httpProtocol)
+  setUp(
+    scn.inject(atOnceUsers(2))
+  ).protocols(httpProtocol)
+
 }
