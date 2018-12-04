@@ -1,15 +1,13 @@
 import io.gatling.app.Gatling
 import io.gatling.core.config.GatlingPropertiesBuilder
 import simulations._
-import finalSimulation._
-
 
 object GatlingRunner {
 
   def main(args: Array[String]): Unit = {
 
     // this is where you specify the class you want to run
-    val simClass = classOf[ComputerCsvFeeder].getName
+    val simClass = classOf[Computer].getName
 
     val props = new GatlingPropertiesBuilder
     props.simulationClass(simClass)
